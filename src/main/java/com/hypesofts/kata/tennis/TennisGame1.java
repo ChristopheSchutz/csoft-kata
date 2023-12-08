@@ -1,9 +1,19 @@
 package com.hypesofts.kata.tennis;
 
 public class TennisGame1 implements TennisGame {
-    
-    private int m_score1 = 0;
-    private int m_score2 = 0;
+
+    private static final String LOVE = "Love";
+    private static final String FIFTEEN = "Fifteen";
+    private static final String THIRTY = "Thirty";
+    private static final String DEUCE = "Deuce";
+    private static final String ALL = "All";
+    private static final String DASH = "-";
+    private static final String ADVANTAGE = "Advantage ";
+    private static final String WIN_FOR = "Win for ";
+    private static final String FORTY = "Forty";
+
+    private int player1Score = 0;
+    private int player2Score = 0;
     private String player1Name;
     private String player2Name;
 
@@ -13,63 +23,89 @@ public class TennisGame1 implements TennisGame {
     }
 
     public void wonPoint(String playerName) {
-        if (playerName == "player1")
-            m_score1 += 1;
+        if (playerName.equals(player1Name))
+            player1Score++;
         else
-            m_score2 += 1;
+            player2Score++;
     }
 
     public String getScore() {
-        String score = "";
-        int tempScore=0;
-        if (m_score1==m_score2)
+        if (isDraw())
         {
-            switch (m_score1)
-            {
-                case 0:
-                        score = "Love-All";
-                    break;
-                case 1:
-                        score = "Fifteen-All";
-                    break;
-                case 2:
-                        score = "Thirty-All";
-                    break;
-                default:
-                        score = "Deuce";
-                    break;
-                
-            }
+            return getDrawScore();
         }
-        else if (m_score1>=4 || m_score2>=4)
+        else if (winnerOrAdvantage())
         {
-            int minusResult = m_score1-m_score2;
-            if (minusResult==1) score ="Advantage player1";
-            else if (minusResult ==-1) score ="Advantage player2";
-            else if (minusResult>=2) score = "Win for player1";
-            else score ="Win for player2";
+            return getWinnerOrAdvantageScore();
         }
         else
         {
-            for (int i=1; i<3; i++)
+            return getOtherScore();
+        }
+    }
+
+    private boolean isDraw() {
+        return player1Score == player2Score;
+    }
+
+    private String getDrawScore() {
+        String score;
+        switch (player1Score)
+        {
+            case 0:
+                score = LOVE + DASH + ALL;
+                break;
+            case 1:
+                score = FIFTEEN + DASH + ALL;
+                break;
+            case 2:
+                score = THIRTY + DASH + ALL;
+                break;
+            default:
+                score = DEUCE;
+                break;
+
+        }
+        return score;
+    }
+
+    private boolean winnerOrAdvantage() {
+        return player1Score >= 4 || player2Score >= 4;
+    }
+
+    private String getWinnerOrAdvantageScore() {
+        String score;
+        int minusResult = player1Score - player2Score;
+        if (minusResult==1) score = ADVANTAGE + player1Name;
+        else if (minusResult ==-1) score = ADVANTAGE + player2Name;
+        else if (minusResult>=2) score = WIN_FOR + player1Name;
+        else score = WIN_FOR + player2Name;
+        return score;
+    }
+
+    private String getOtherScore() {
+        int tempScore;
+        String score = "";
+        for (int i = 1; i<3; i++)
+        {
+            if (i==1) tempScore = player1Score;
+            else {
+                score += DASH; tempScore = player2Score;
+            }
+            switch(tempScore)
             {
-                if (i==1) tempScore = m_score1;
-                else { score+="-"; tempScore = m_score2;}
-                switch(tempScore)
-                {
-                    case 0:
-                        score+="Love";
-                        break;
-                    case 1:
-                        score+="Fifteen";
-                        break;
-                    case 2:
-                        score+="Thirty";
-                        break;
-                    case 3:
-                        score+="Forty";
-                        break;
-                }
+                case 0:
+                    score += LOVE;
+                    break;
+                case 1:
+                    score += FIFTEEN;
+                    break;
+                case 2:
+                    score += THIRTY;
+                    break;
+                case 3:
+                    score += FORTY;
+                    break;
             }
         }
         return score;
