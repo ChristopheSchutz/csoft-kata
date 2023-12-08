@@ -1,0 +1,1 @@
+- Create tests that cover 100% of production code, with assertions being created by Intellij (we know the production code works)
