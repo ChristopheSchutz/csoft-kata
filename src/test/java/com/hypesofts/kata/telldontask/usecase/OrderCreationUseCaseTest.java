@@ -7,16 +7,14 @@ import com.hypesofts.kata.telldontask.domain.Product;
 import com.hypesofts.kata.telldontask.doubles.InMemoryProductCatalog;
 import com.hypesofts.kata.telldontask.doubles.TestOrderRepository;
 import com.hypesofts.kata.telldontask.repository.ProductCatalog;
-import com.hypesofts.kata.telldontask.usecase.OrderCreationUseCase;
-import com.hypesofts.kata.telldontask.usecase.SellItemRequest;
-import com.hypesofts.kata.telldontask.usecase.SellItemsRequest;
-import com.hypesofts.kata.telldontask.usecase.UnknownProductException;
+import com.hypesofts.kata.telldontask.usecase.exception.UnknownProductException;
+import com.hypesofts.kata.telldontask.usecase.request.SellItemRequest;
+import com.hypesofts.kata.telldontask.usecase.request.SellItemsRequest;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -44,7 +42,7 @@ public class OrderCreationUseCaseTest {
     private final OrderCreationUseCase useCase = new OrderCreationUseCase(orderRepository, productCatalog);
 
     @Test
-    public void sellMultipleItems() throws Exception {
+    public void sellMultipleItems() {
         SellItemRequest saladRequest = new SellItemRequest();
         saladRequest.setProductName("salad");
         saladRequest.setQuantity(2);
@@ -79,7 +77,7 @@ public class OrderCreationUseCaseTest {
     }
 
     @Test
-    public void unknownProduct() throws Exception {
+    public void unknownProduct() {
         SellItemsRequest request = new SellItemsRequest();
         request.setRequests(new ArrayList<>());
         SellItemRequest unknownProductRequest = new SellItemRequest();

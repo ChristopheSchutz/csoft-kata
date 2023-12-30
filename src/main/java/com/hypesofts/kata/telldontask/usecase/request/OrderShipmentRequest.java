@@ -1,4 +1,4 @@
-package com.hypesofts.kata.telldontask.usecase;
+package com.hypesofts.kata.telldontask.usecase.request;
 
 public class OrderShipmentRequest {
     private int orderId;

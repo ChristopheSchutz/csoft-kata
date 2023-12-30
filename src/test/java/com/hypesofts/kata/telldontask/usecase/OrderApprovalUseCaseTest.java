@@ -1,33 +1,28 @@
 package com.hypesofts.kata.telldontask.usecase;
 
 import com.hypesofts.kata.telldontask.domain.Order;
+import com.hypesofts.kata.telldontask.domain.OrderApprovalStatus;
 import com.hypesofts.kata.telldontask.domain.OrderStatus;
 import com.hypesofts.kata.telldontask.doubles.TestOrderRepository;
-import com.hypesofts.kata.telldontask.usecase.ApprovedOrderCannotBeRejectedException;
-import com.hypesofts.kata.telldontask.usecase.OrderApprovalRequest;
-import com.hypesofts.kata.telldontask.usecase.OrderApprovalUseCase;
-import com.hypesofts.kata.telldontask.usecase.RejectedOrderCannotBeApprovedException;
-import com.hypesofts.kata.telldontask.usecase.ShippedOrdersCannotBeChangedException;
+import com.hypesofts.kata.telldontask.usecase.exception.ApprovedOrderCannotBeRejectedException;
+import com.hypesofts.kata.telldontask.usecase.exception.RejectedOrderCannotBeApprovedException;
+import com.hypesofts.kata.telldontask.usecase.exception.ShippedOrdersCannotBeChangedException;
+import com.hypesofts.kata.telldontask.usecase.request.OrderApprovalRequest;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import org.junit.jupiter.api.Test;
 
 public class OrderApprovalUseCaseTest {
     private final TestOrderRepository orderRepository = new TestOrderRepository();
     private final OrderApprovalUseCase useCase = new OrderApprovalUseCase(orderRepository);
 
     @Test
-    public void approvedExistingOrder() throws Exception {
-        Order initialOrder = new Order();
-        initialOrder.setStatus(OrderStatus.CREATED);
-        initialOrder.setId(1);
+    public void approvedExistingOrder() {
+        Order initialOrder = new Order(OrderStatus.CREATED, 1);
         orderRepository.addOrder(initialOrder);
 
-        OrderApprovalRequest request = new OrderApprovalRequest();
-        request.setOrderId(1);
-        request.setApproved(true);
+        OrderApprovalRequest request = new OrderApprovalRequest(1, OrderApprovalStatus.APPROVED);
 
         useCase.run(request);
 
@@ -36,15 +31,11 @@ public class OrderApprovalUseCaseTest {
     }
 
     @Test
-    public void rejectedExistingOrder() throws Exception {
-        Order initialOrder = new Order();
-        initialOrder.setStatus(OrderStatus.CREATED);
-        initialOrder.setId(1);
+    public void rejectedExistingOrder() {
+        Order initialOrder = new Order(OrderStatus.CREATED, 1);
         orderRepository.addOrder(initialOrder);
 
-        OrderApprovalRequest request = new OrderApprovalRequest();
-        request.setOrderId(1);
-        request.setApproved(false);
+        OrderApprovalRequest request = new OrderApprovalRequest(1, OrderApprovalStatus.REJECTED);
 
         useCase.run(request);
 
@@ -53,60 +44,44 @@ public class OrderApprovalUseCaseTest {
     }
 
     @Test
-    public void cannotApproveRejectedOrder() throws Exception {
-        Order initialOrder = new Order();
-        initialOrder.setStatus(OrderStatus.REJECTED);
-        initialOrder.setId(1);
+    public void cannotApproveRejectedOrder() {
+        Order initialOrder = new Order(OrderStatus.REJECTED, 1);
         orderRepository.addOrder(initialOrder);
 
-        OrderApprovalRequest request = new OrderApprovalRequest();
-        request.setOrderId(1);
-        request.setApproved(true);
+        OrderApprovalRequest request = new OrderApprovalRequest(1, OrderApprovalStatus.APPROVED);
 
         assertThatThrownBy(() -> useCase.run(request)).isExactlyInstanceOf(RejectedOrderCannotBeApprovedException.class);
         assertThat(orderRepository.getSavedOrder()).isNull();
     }
 
     @Test
-    public void cannotRejectApprovedOrder() throws Exception {
-        Order initialOrder = new Order();
-        initialOrder.setStatus(OrderStatus.APPROVED);
-        initialOrder.setId(1);
+    public void cannotRejectApprovedOrder() {
+        Order initialOrder = new Order(OrderStatus.APPROVED, 1);
         orderRepository.addOrder(initialOrder);
 
-        OrderApprovalRequest request = new OrderApprovalRequest();
-        request.setOrderId(1);
-        request.setApproved(false);
+        OrderApprovalRequest request = new OrderApprovalRequest(1, OrderApprovalStatus.REJECTED);
         
         assertThatThrownBy(() -> useCase.run(request)).isExactlyInstanceOf(ApprovedOrderCannotBeRejectedException.class);
         assertThat(orderRepository.getSavedOrder()).isNull();
     }
 
     @Test
-    public void shippedOrdersCannotBeApproved() throws Exception {
-        Order initialOrder = new Order();
-        initialOrder.setStatus(OrderStatus.SHIPPED);
-        initialOrder.setId(1);
+    public void shippedOrdersCannotBeApproved() {
+        Order initialOrder = new Order(OrderStatus.SHIPPED, 1);
         orderRepository.addOrder(initialOrder);
 
-        OrderApprovalRequest request = new OrderApprovalRequest();
-        request.setOrderId(1);
-        request.setApproved(true);
+        OrderApprovalRequest request = new OrderApprovalRequest(1, OrderApprovalStatus.APPROVED);
 
         assertThatThrownBy(() -> useCase.run(request)).isExactlyInstanceOf(ShippedOrdersCannotBeChangedException.class);
         assertThat(orderRepository.getSavedOrder()).isNull();
     }
 
     @Test
-    public void shippedOrdersCannotBeRejected() throws Exception {
-        Order initialOrder = new Order();
-        initialOrder.setStatus(OrderStatus.SHIPPED);
-        initialOrder.setId(1);
+    public void shippedOrdersCannotBeRejected() {
+        Order initialOrder = new Order(OrderStatus.SHIPPED, 1);
         orderRepository.addOrder(initialOrder);
 
-        OrderApprovalRequest request = new OrderApprovalRequest();
-        request.setOrderId(1);
-        request.setApproved(false);
+        OrderApprovalRequest request = new OrderApprovalRequest(1, OrderApprovalStatus.REJECTED);
 
         assertThatThrownBy(() -> useCase.run(request)).isExactlyInstanceOf(ShippedOrdersCannotBeChangedException.class);
         assertThat(orderRepository.getSavedOrder()).isNull();

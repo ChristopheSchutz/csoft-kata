@@ -1,9 +1,11 @@
 package com.hypesofts.kata.telldontask.usecase;
 
 import com.hypesofts.kata.telldontask.domain.Order;
-import com.hypesofts.kata.telldontask.domain.OrderStatus;
 import com.hypesofts.kata.telldontask.repository.OrderRepository;
 import com.hypesofts.kata.telldontask.service.ShipmentService;
+import com.hypesofts.kata.telldontask.usecase.exception.OrderCannotBeShippedException;
+import com.hypesofts.kata.telldontask.usecase.exception.OrderCannotBeShippedTwiceException;
+import com.hypesofts.kata.telldontask.usecase.request.OrderShipmentRequest;
 
 
 public class OrderShipmentUseCase {
@@ -15,20 +17,11 @@ public class OrderShipmentUseCase {
         this.shipmentService = shipmentService;
     }
 
-    public void run(OrderShipmentRequest request) {
+    public void run(OrderShipmentRequest request) throws OrderCannotBeShippedException, OrderCannotBeShippedTwiceException{
         final Order order = orderRepository.getById(request.getOrderId());
-
-        if (order.getStatus().equals(OrderStatus.CREATED) || order.getStatus().equals(OrderStatus.REJECTED)) {
-            throw new OrderCannotBeShippedException();
-        }
-
-        if (order.getStatus().equals(OrderStatus.SHIPPED)) {
-            throw new OrderCannotBeShippedTwiceException();
-        }
-
+        order.checkShipmentPossible();
         shipmentService.ship(order);
-
-        order.setStatus(OrderStatus.SHIPPED);
+        order.ship();
         orderRepository.save(order);
     }
 }

@@ -1,8 +1,8 @@
 package com.hypesofts.kata.telldontask.usecase;
 
 import com.hypesofts.kata.telldontask.domain.Order;
-import com.hypesofts.kata.telldontask.domain.OrderStatus;
 import com.hypesofts.kata.telldontask.repository.OrderRepository;
+import com.hypesofts.kata.telldontask.usecase.request.OrderApprovalRequest;
 
 public class OrderApprovalUseCase {
     private final OrderRepository orderRepository;
@@ -13,20 +13,7 @@ public class OrderApprovalUseCase {
 
     public void run(OrderApprovalRequest request) {
         final Order order = orderRepository.getById(request.getOrderId());
-
-        if (order.getStatus().equals(OrderStatus.SHIPPED)) {
-            throw new ShippedOrdersCannotBeChangedException();
-        }
-
-        if (request.isApproved() && order.getStatus().equals(OrderStatus.REJECTED)) {
-            throw new RejectedOrderCannotBeApprovedException();
-        }
-
-        if (!request.isApproved() && order.getStatus().equals(OrderStatus.APPROVED)) {
-            throw new ApprovedOrderCannotBeRejectedException();
-        }
-
-        order.setStatus(request.isApproved() ? OrderStatus.APPROVED : OrderStatus.REJECTED);
+        order.approve(request);
         orderRepository.save(order);
     }
 }
