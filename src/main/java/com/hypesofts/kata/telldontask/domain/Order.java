@@ -57,36 +57,31 @@ public class Order {
     public void ship() {
         this.status = OrderStatus.SHIPPED;
     }
-    public BigDecimal getTotal() {
-        return total;
+
+    public void addItem(OrderItem item) {
+        this.items.add(item);
+        addTax(item.getTax());
+        addAmount(item.getTaxedAmount());
     }
 
-    public void setTotal(BigDecimal total) {
-        this.total = total;
+    private void addAmount(BigDecimal amount) {
+        this.total = this.total.add(amount);
+    }
+
+    private void addTax(BigDecimal tax) {
+        this.tax = this.tax.add(tax);
+    }
+
+    public BigDecimal getTotal() {
+        return total;
     }
 
     public String getCurrency() {
         return currency;
     }
 
-    public void setCurrency(String currency) {
-        this.currency = currency;
-    }
-
-    public List<OrderItem> getItems() {
-        return items;
-    }
-
-    public void setItems(List<OrderItem> items) {
-        this.items = items;
-    }
-
     public BigDecimal getTax() {
         return tax;
-    }
-
-    public void setTax(BigDecimal tax) {
-        this.tax = tax;
     }
 
     public OrderStatus getStatus() {
@@ -101,7 +96,7 @@ public class Order {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public List<OrderItem> getItems() {
+        return List.copyOf(items);
     }
 }
