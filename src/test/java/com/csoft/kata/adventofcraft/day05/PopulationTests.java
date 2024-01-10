@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.lang.System.lineSeparator;
@@ -55,24 +56,33 @@ class PopulationTests {
     private static StringBuilder formatPopulation() {
         final var response = new StringBuilder();
 
-        for (var person : population) {
-            response.append(format("%s %s", person.firstName(), person.lastName()));
+        response.append(population.stream()
+                .map(PopulationTests::formatPerson)
+                .collect(Collectors.joining(lineSeparator())));
 
-            if (!person.pets().isEmpty()) {
-                response.append(" who owns : ");
-            }
-
-            for (var pet : person.pets()) {
-                response.append(pet.name()).append(" ");
-            }
-
-            if (!population.getLast().equals(person)) {
-                response.append(lineSeparator());
-            }
-        }
         return response;
     }
 
+    private static StringBuilder formatPerson(Person person) {
+        final var response = new StringBuilder();
+
+        response.append(format("%s %s", person.firstName(), person.lastName()));
+        response.append(formatPets(person));
+
+        return response;
+    }
+
+    private static StringBuilder formatPets(Person person) {
+        final var response = new StringBuilder();
+
+        if (!person.pets().isEmpty()) {
+            response.append(" who owns : ");
+        }
+
+        person.pets().forEach(pet -> response.append(format("%s ", pet.name())));
+
+        return response;
+    }
     @Test
     void whoOwnsTheYoungestPet() {
         var filtered = population.stream()
