@@ -11,10 +11,10 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>hypesofts</groupId>
-    <artifactId>hype-kata</artifactId>
+    <groupId>com.csoft</groupId>
+    <artifactId>csoft-kata</artifactId>
     <version>1.0.0</version>
-    <name>Hype Kata</name>
+    <name>CSoft Kata</name>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
