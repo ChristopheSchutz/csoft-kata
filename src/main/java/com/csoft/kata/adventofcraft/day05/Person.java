@@ -1,8 +1,5 @@
 package com.csoft.kata.adventofcraft.day05;
 
-import com.csoft.kata.adventofcraft.day03.Pet;
-import com.csoft.kata.adventofcraft.day03.PetType;
-
 import java.util.ArrayList;
 import java.util.List;
 
