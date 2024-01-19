@@ -57,3 +57,7 @@ export type Time = {
     hour: number;
     minute: number;
 }
+
+// NB
+// padStart(length, padString) => string
+// const value = "abc"; ${'value'} => abc
